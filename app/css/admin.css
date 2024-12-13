@@ -119,6 +119,10 @@ nav.pager a.active {
     text-align: left;
 }
 
+.detail th {
+    text-align: left;
+}
+
 /* Sorting */
 .table th a {
     color: inherit;
@@ -191,6 +195,32 @@ label > * {
 }
 
 /* Photo Upload ------------------------------------------------------------ */
+
+label.upload img {
+    display: block;
+    border: 1px solid #333;
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    cursor: pointer;
+    margin: 5px auto; 
+}
+
+/* save button */
+.input-container {
+    display: flex;
+    align-items: center;
+}
+
+.edit-input {
+    flex-grow: 1;
+    margin-right: 5px;
+}
+
+.save-btn, .cancel-btn {
+    margin-left: 5px;
+    padding: 2px 5px;
+}
 
 label.upload img {
     display: block;
