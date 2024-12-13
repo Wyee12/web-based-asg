@@ -55,7 +55,7 @@ if (is_post()) {
         $stm->execute([$member_new_password, $id]);
 
         temp('info', 'Member password updated.');
-        redirect('member.php');
+        redirect('member_list.php');
     }
 }
 
@@ -81,7 +81,7 @@ include '../_head.php';
 
     <section>
         <button type="submit">Save</button>
-        <a href="member.php">Cancel</a>
+        <a href="member_list.php">Cancel</a>
     </section>
 </form>
 

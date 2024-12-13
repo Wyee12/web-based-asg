@@ -13,7 +13,7 @@ $member = $stm->fetch();
 // If member not found, redirect back
 if (!$member) {
     temp('info', 'Member not found.');
-    redirect('member.php');
+    redirect('member_list.php');
 }
 
 // Handle form submission
@@ -80,7 +80,7 @@ if (is_post()) {
         $stm = $_db->prepare($sql);
         $stm->execute($params);
         
-        redirect('member.php');
+        redirect('member_list.php');
     }
 }
 
@@ -172,7 +172,7 @@ include '../_head.php';
 
         <div class="form-buttons">
             <button type="submit">Update</button>
-            <a href="member.php" class="button">Cancel</a>
+            <a href="member_list.php" class="button">Cancel</a>
         </div>
     </form>
 </body>

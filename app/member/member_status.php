@@ -18,6 +18,6 @@ if (is_post()) {
 
     // Redirect back to the member list with the current page number
     temp('info', 'Status updated');
-    redirect("member.php?page=$page");
+    redirect("member_list.php?page=$page");
 }
 ?>

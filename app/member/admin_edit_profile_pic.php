@@ -13,7 +13,7 @@ if (is_get()) {
 
     if (!$member) {
         temp('info', 'Member not found.');
-        redirect('member.php');
+        redirect('member_list.php');
     }
 
     extract((array)$member);
@@ -87,7 +87,7 @@ if (is_post()) {
         $stm->execute([$member_profile_pic, $id]);
 
         temp('info', 'Member profile picture updated.');
-        redirect('member.php');
+        redirect('member_list.php');
     }
     else {
         temp('info', 'Please check the error(s).');
@@ -134,7 +134,7 @@ include '../_head.php';
 
     <section>
         <button type="submit">Save</button>
-        <a href="member.php">Cancel</a>
+        <a href="member_list.php">Cancel</a>
     </section>
 </form>
 
