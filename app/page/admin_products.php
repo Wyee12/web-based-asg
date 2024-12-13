@@ -154,7 +154,7 @@ $p = new SimplePager(
 $arr = $p->result;
 
 $_title = 'Gadget';
-include '../_head.php';
+include '../_adminHead.php';
 ?>
 
 <button class="button addProdButton" onclick="window.location.href='add_gadget.php'">Add New Gadget</button>

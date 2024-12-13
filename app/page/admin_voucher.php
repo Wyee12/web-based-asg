@@ -5,7 +5,7 @@ require '../_base.php';
 
 // ----------------------------------------------------------------------------
 $_title = 'Page | Demo 2 | Ordered List';
-include '../_head.php';
+include '../_adminHead.php';
 ?>
 
 <p><?= count($states) ?> state(s)</p>

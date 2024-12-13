@@ -22,6 +22,7 @@
         <a href="/logout.php">Logout</a>
         <a href="/adminLogin.php">admin Login</a>
         <a href="/adminLogout.php">admin Logout</a>
+        <a href="/_adminHead.php">admin Header</a>
     </nav>
 
 

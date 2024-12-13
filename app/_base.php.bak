@@ -176,44 +176,6 @@ function html_select($key, $items, $default = '- Select One -', $attr = '')
     echo '</select>';
 }
 
-// Generate <input type='file'>
-function html_file($key, $accept = '', $attr = '')
-{
-    echo "<input type='file' id='$key' name='$key' accept='$accept' $attr>";
-}
-
-// Generate <input type='search'>
-function html_search($key, $attr = '')
-{
-    $value = encode($GLOBALS[$key] ?? '');
-    echo "<input type='search' id='$key' name='$key' value='$value' $attr>";
-}
-
-// Generate <textarea>
-function html_textarea($key, $attr = '') {
-    $value = encode($GLOBALS[$key] ?? '');
-    echo "<textarea id='$key' name='$key' $attr>$value</textarea>";
-}
-
-// Generate table headers <th>
-function table_headers($fields, $sort, $dir, $href = '')
-{
-    foreach ($fields as $k => $v) {
-        if ($k === 'action') {
-            echo "<th>$v</th>";
-        } else {
-            $d = 'asc'; // Default direction
-            $c = '';    // Default class
-
-            if ($k == $sort) {
-                $d = $dir == 'asc' ? 'desc' : 'asc';
-                $c = $dir;
-            }
-
-            echo "<th><a href='?sort=$k&dir=$d&$href' class='$c'>$v</a></th>";
-        }
-    }
-}
 // ============================================================================
 // Error Handlings
 // ============================================================================

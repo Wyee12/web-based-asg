@@ -12,7 +12,7 @@ if (is_post()) {
 
 // ----------------------------------------------------------------------------
 $_title = 'Page | Demo 4 | GET and POST Requests';
-include '../_head.php';
+include '../_adminHead.php';
 ?>
 
 <style>

@@ -35,7 +35,7 @@ if (is_post()) {
 }
 
 $_title = 'Gadget Category';
-include '../_head.php';
+include '../_adminHead.php';
 ?>
 
 <form action="add_category.php" method="post">

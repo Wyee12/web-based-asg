@@ -35,7 +35,7 @@ if (is_post()) {
 }
 
 $_title = 'Gadget Brand';
-include '../_head.php';
+include '../_adminHead.php';
 ?>
 
 <form action="add_brand.php" method="post">

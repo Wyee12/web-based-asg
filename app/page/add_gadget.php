@@ -95,7 +95,7 @@ if (is_post()) {
             <span class="close">&times;</span>
 
             <label for="photo" class="upload" tabindex="0">
-                <?= html_file('photo', 'image/*', 'hidden') ?>
+                <?= html_file('photo', 'images/*', 'hidden') ?>
                 <img src="/images/defaultImage.png">
             </label>
             <?= err('photo') ?>

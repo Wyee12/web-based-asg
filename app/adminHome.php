@@ -15,7 +15,7 @@ if (!empty($_SESSION["admin"])) {
 
 // ----------------------------------------------------------------------------
 $_title = 'admin Home';
-include '_head.php';
+include '_adminHead.php';
 ?>
 
 
