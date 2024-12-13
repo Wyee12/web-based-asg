@@ -1,4 +1,75 @@
 <?php
+include '_base.php';
+
+// ----------------------------------------------------------------------------
+
+if (is_post()) {
+    $email    = req('email');
+    $password = req('password');
+
+    // Validate: email
+    if ($email == '') {
+        $_err['email'] = 'Required';
+    }
+    else if (!is_email($email)) {
+        $_err['email'] = 'Invalid email';
+    }
+
+    // Validate: password
+    if ($password == '') {
+        $_err['password'] = 'Required';
+    }
+
+    // Login user
+    if (!$_err) {
+        // TODO
+        $stm = $_db->prepare('
+            SELECT * FROM user
+            WHERE email = ? AND password = SHA1(?)
+        '); 
+        $stm->execute([$email,$password]);
+        $u = $stm->fetch();
+
+        if ($u) {
+            temp('info', 'Login successfully');
+            // TODO
+            login($u);
+        }
+        else {
+            $_err['password'] = 'Not matched';
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+$_title = 'Login';
+include '_head.php';
+?>
+
+<form method="post" class="form">
+    <label for="email">Email</label>
+    <?= html_text('email', 'maxlength="100"') ?>
+    <?= err('email') ?>
+
+    <label for="password">Password</label>
+    <?= html_password('password', 'maxlength="100"') ?>
+    <?= err('password') ?>
+
+    <section>
+        <button>Login</button>
+        <button type="reset">Reset</button>
+    </section>
+</form>
+
+<?php
+include '_foot.php';
+
+
+
+
+
+<?php
 
 // ============================================================================
 // PHP Setups
@@ -92,23 +163,15 @@ function is_email($value) {
     return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
 }
 
-// Return local root path
-function root($path = '') {
-    return "$_SERVER[DOCUMENT_ROOT]/$path";
-}
-
-// Return base url (host + port)
-function base($path = '') {
-    return "http://$_SERVER[SERVER_NAME]:$_SERVER[SERVER_PORT]/$path";
-}
-
 // ============================================================================
 // HTML Helpers
 // ============================================================================
 
 // Placeholder for TODO
 function TODO() {
-    echo '<span>TODO</span>';
+    echo '<span>TO
+    
+    DO</span>';
 }
 
 // Encode HTML special characters
@@ -122,10 +185,17 @@ function html_text($key, $attr = '') {
     echo "<input type='text' id='$key' name='$key' value='$value' $attr>";
 }
 
+// Generate <input type='password'>
 function html_password($key, $attr = '') {
     $value = encode($GLOBALS[$key] ?? '');
     echo "<input type='password' id='$key' name='$key' value='$value' $attr>";
 }
+
+
+
+
+
+
 
 // Generate <input type='number'>
 function html_number($key, $min = '', $max = '', $step = '', $attr = '') {
@@ -141,12 +211,12 @@ function html_search($key, $attr = '') {
 }
 
 // Generate <input type='radio'> list
-function html_radios($key, $items, $attr = '', $br = false) {
+function html_radios($key, $items, $br = false) {
     $value = encode($GLOBALS[$key] ?? '');
     echo '<div>';
     foreach ($items as $id => $text) {
         $state = $id == $value ? 'checked' : '';
-        echo "<label><input type='radio' id='{$key}_$id' name='$key' value='$id' $state $attr>$text</label>";
+        echo "<label><input type='radio' id='{$key}_$id' name='$key' value='$id' $state>$text</label>";
         if ($br) {
             echo '<br>';
         }
@@ -175,30 +245,16 @@ function html_file($key, $accept = '', $attr = '') {
 
 // Generate table headers <th>
 function table_headers($fields, $sort, $dir, $href = '') {
-    // Parse existing href parameters
-    parse_str($href, $params);
-    
     foreach ($fields as $k => $v) {
-        // Set the direction for the next click
-        $next_dir = ($k == $sort) ? ($dir == 'asc' ? 'desc' : 'asc') : 'asc';
+        $d = 'asc'; // Default direction
+        $c = '';    // Default class
         
-        // Add sort indicators (arrows)
-        $arrow = '';
         if ($k == $sort) {
-            $arrow = $dir == 'asc' ? ' ▴' : ' ▾';
+            $d = $dir == 'asc' ? 'desc' : 'asc';
+            $c = $dir;
         }
-        
-        // Merge parameters with sort and dir
-        $url_params = array_merge($params, [
-            'sort' => $k,
-            'dir' => $next_dir
-        ]);
-        
-        // Build query string
-        $query = http_build_query($url_params);
-        
-        // Build the header link with sort indicator
-        echo "<th><a href='?$query'>$v$arrow</a></th>";
+
+        echo "<th><a href='?sort=$k&dir=$d&$href' class='$c'>$v</a></th>";
     }
 }
 
@@ -221,12 +277,47 @@ function err($key) {
 }
 
 // ============================================================================
+// Security
+// ============================================================================
+
+// Global user object
+$_user = $_SESSION['user'] ?? null;
+
+// Login user
+function login($user, $url = '/') {
+    $_SESSION['user'] = $user;
+    redirect($url);
+}
+
+// Logout user
+function logout($url = '/') {
+    unset($_SESSION['user']);
+    redirect($url);
+}
+
+// Authorization
+function auth(...$roles) {
+    global $_user;
+    if ($_user) {
+        if ($roles) {
+            if (in_array($_user->role, $roles)) {
+                return; // OK
+            }
+        }
+        else {
+            return; // OK
+        }
+    }
+    
+    redirect('/login.php');
+}
+
+// ============================================================================
 // Database Setups and Functions
 // ============================================================================
 
 // Global PDO object
-// TODO
-$_db = new PDO('mysql:dbname=gadgetwebdb', 'root', '', [
+$_db = new PDO('mysql:dbname=db7', 'root', '', [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
 ]);
 
@@ -246,131 +337,63 @@ function is_exists($value, $table, $field) {
     return $stm->fetchColumn() > 0;
 }
 
-// 
-// Global Constants and Variables
-// ============================================================================
-
-$_member_attr = [
-    'member_id' => 'Member ID',
-    'member_name' => 'Name',
-    'member_phone_no' => 'Phone No',
-    'member_gender' => 'Gender',
-    'member_email' => 'Email',
-    'shipping_address' => 'Shipping Address',
-    'member_status' => 'Status',
-    'member_profile_pic' => 'Profile Pic'];
-// ============================================================================
-// Security
-// ============================================================================
-
-// Global user object
-$_member = $_SESSION['member'] ?? null;
-$_admin = $_SESSION['admin'] ?? null;
-
-// Login user
-function login($member, $url = '/home.php') {
-    $_SESSION['member'] = $member;
-    redirect($url);
-}
-
-// Logout user
-function logout($url = '/index.php') {
-    unset($_SESSION['member']);
-    redirect($url);
-}
-
-function adminlogin($admin, $url = '/adminHome.php') {
-    $_SESSION['admin'] = $admin;
-    redirect($url);
-}
-
-// Logout user
-function adminlogout($url = '/adminLogin.php') {
-    unset($_SESSION['admin']);
-    redirect($url);
-}
-
-// Authorization
-function auth(...$roles) {
-    global $_user;
-    if ($_user) {
-        if ($roles) {
-            if (in_array($_user->role, $roles)) {
-                return; // OK
-            }
-        }
-        else {
-            return; // OK
-        }
-    }
-    
-    redirect('/home.php');
-}
-
-// ============================================================================
-// Email Functions
-// ============================================================================
-
-// Demo Accounts:
-// --------------
-// AACS3173@gmail.com           npsg gzfd pnio aylm
-// BAIT2173.email@gmail.com     ytwo bbon lrvw wclr
-// liaw.casual@gmail.com        wtpa kjxr dfcb xkhg
-// liawcv1@gmail.com            obyj shnv prpa kzvj
-
-// Initialize and return mail object
-function get_mail() {
-    require_once 'lib/PHPMailer.php';
-    require_once 'lib/SMTP.php';
-
-    $m = new PHPMailer(true);
-    $m->isSMTP();
-    $m->SMTPAuth = true;
-    $m->Host = 'smtp.gmail.com';
-    $m->Port = 587;
-    $m->Username = 'AACS3173@gmail.com';
-    $m->Password = 'npsg gzfd pnio aylm';
-    $m->CharSet = 'utf-8';
-    $m->setFrom($m->Username, '😺 Admin');
-
-    return $m;
-}
-function auto_id($idColumn, $tableName, $idPrefix, $pattern = '/(\d+)$/', $padLength = 5)
-{
-    global $_db;
-    $stmt = $_db->query("SELECT $idColumn FROM $tableName ORDER BY $idColumn DESC LIMIT 1");
-    $lastId = $stmt->fetchColumn();
-
-    if (!$lastId) {
-        return sprintf("%s%0{$padLength}d", $idPrefix, 1);
-    }
-
-    if (preg_match($pattern, $lastId, $matches)) {
-        $lastIdNum = (int)$matches[1]; 
-        $newIdNum = $lastIdNum + 1;
-    } else {
-        throw new Exception("Invalid ID format in the table.");
-    }
-
-    return sprintf("%s%0{$padLength}d", $idPrefix, $newIdNum);
-}
-
-
 // ============================================================================
 // Global Constants and Variables
 // ============================================================================
 
-$_genders = [
-    'F' => 'Female',
-    'M' => 'Male',
-];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= $_title ?? 'Untitled' ?></title>
+    <link rel="shortcut icon" href="/images/favicon.png">
+    <link rel="stylesheet" href="/css/app.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="/js/app.js"></script>
+</head>
+<body>
+    <!-- Flash message -->
+    <div id="info"><?= temp('info') ?></div>
 
-$_status = [
-    'A' => 'Active',
-    'U' => 'Unactive',
-];
+    <header>
+        <h1><a href="/">Basic Security</a></h1>
 
-$_genders = [
-    'F' => 'Female',
-    'M' => 'Male',
-];
+        <?php if ($_user): ?>
+            <div>
+                <?= $_user->name ?><br>
+                <?= $_user->role ?>
+            </div>
+            <img src="/photos/<?= $_user->photo ?>">
+        <?php endif ?>
+    </header>
+
+    <nav>
+        <a href="/">Index</a>
+
+        <?php if ($_user): ?>
+            <a href="/demo1.php">Demo 1</a>
+        <?php endif ?>
+
+        <?php if ($_user?->role == 'Admin'): ?>
+            <a href="/demo2.php">Demo 2</a>
+        <?php endif ?>
+
+        <?php if ($_user?->role == 'Member'): ?>
+            <a href="/demo3.php">Demo 3</a>
+        <?php endif ?>
+
+        <div></div>
+
+        <?php if ($_user): ?>
+            <a href="/user/profile.php">Profile</a>
+            <a href="/user/password.php">Password</a>
+            <a href="/logout.php">Logout</a>
+        <?php else: ?>
+            <a href="/user/register.php">Register</a>
+            <a href="/login.php">Login</a>
+        <?php endif ?>
+    </nav>
+
+    <main>
+        <h1><?= $_title ?? 'Untitled' ?></h1>
