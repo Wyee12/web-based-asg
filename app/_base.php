@@ -202,6 +202,12 @@ function table_headers($fields, $sort, $dir, $href = '') {
     }
 }
 
+// Generate <textarea>
+function html_textarea($key, $attr = '') {
+    $value = encode($GLOBALS[$key] ?? '');
+    echo "<textarea id='$key' name='$key' $attr>$value</textarea>";
+}
+
 // ============================================================================
 // Error Handlings
 // ============================================================================
