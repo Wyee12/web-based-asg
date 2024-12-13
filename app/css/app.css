@@ -2,7 +2,11 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
-body, input, button, textarea, select {
+body,
+input,
+button,
+textarea,
+select {
     font: 16px 'Roboto', sans-serif;
 }
 
@@ -15,7 +19,8 @@ body {
     grid: auto auto 1fr auto / auto;
 }
 
-header, footer {
+header,
+footer {
     padding: 10px 50px;
     background: #ccc;
 }
@@ -63,7 +68,8 @@ main h1 {
     border-collapse: collapse;
 }
 
-.table th, .table td {
+.table th,
+.table td {
     border: 1px solid #333;
     padding: 5px;
 }
@@ -95,8 +101,23 @@ main h1 {
     display: block;
 }
 
-.detail th {
-    text-align: left;
+.err {
+    color: red;
+    font-size: 0.9em;
+}
+
+/* Sorting */
+.table th a {
+    color: inherit;
+    display: block;
+}
+
+.table th a.asc::after {
+    content: ' ▴';
+}
+
+.table th a.desc::after {
+    content: ' ▾';
 }
 
 /* Flash Message ----------------------------------------------------------- */
@@ -127,31 +148,78 @@ main h1 {
     100% { top: -100px; opacity: 0; }
 }
 
-/* Form -------------------------------------------------------------------- */
-
-label > * {
-    vertical-align: text-top;
+/* admin_products */
+.form-container {
+    display: flex; /* Initially hidden */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    overflow: auto; /* Enable scroll if needed */
 }
 
-.form {
-    display: grid;
-    grid: auto / auto auto auto;
-    gap: 5px;
-    place-content: start;
-    place-items: center start;
+.gadgetInfo {
+    width: 400px;
+    max-width: 90%;
+    background-color: #fefefe;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: left;
+    color: #333;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
 }
 
-.form > label:not(:has(*)) {
-    place-self: stretch;
-    background: #ccc;
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
     font-weight: bold;
-    padding: 5px;
 }
 
-.form > section {
-    grid-column: 1 / -1;
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-.err {
-    color: red;
+.form-container img, .upload {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    flex-direction: column;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #333;
+    cursor: pointer;
+    margin: 5px auto; 
 }
+
+/* save button */
+.input-container {
+    display: flex;
+    align-items: center;
+}
+
+.edit-input {
+    flex-grow: 1;
+    margin-right: 5px;
+}
+
+.save-btn, .cancel-btn {
+    margin-left: 5px;
+    padding: 2px 5px;
+}
+

@@ -65,9 +65,10 @@ function temp($key, $value = null)
 }
 
 // Obtain uploaded file --> cast to object
-function get_file($key) {
+function get_file($key)
+{
     $f = $_FILES[$key] ?? null;
-    
+
     if ($f && $f['error'] == 0) {
         return (object)$f;
     }
@@ -144,6 +145,20 @@ function html_radios($key, $items, $br = false)
         }
     }
     echo '</div>';
+}
+// Generate <input type="number"> field
+// Render a number input with default value and attributes
+// How to use: html_number('price', '100', ['min' => '0', 'max' => '1000', 'step' => '10', 'class' => 'number-input'], 'RM ');
+function html_number($name, $value = '', $attrs = [], $prefix = '') {
+    $attrs_str = '';
+    foreach ($attrs as $k => $v) {
+        $attrs_str .= " $k=\"" . htmlspecialchars($v) . '"';
+    }
+    
+    $prefix_html = $prefix ? "<span class='input-prefix'>$prefix</span>" : '';
+    
+    return "$prefix_html<input type='number' name='$name' value='" . 
+           htmlspecialchars($value) . "'$attrs_str>";
 }
 
 // Generate <select>
@@ -283,6 +298,26 @@ function get_mail() {
 
     return $m;
 }
+function auto_id($idColumn, $tableName, $idPrefix, $pattern = '/(\d+)$/', $padLength = 5)
+{
+    global $_db;
+    $stmt = $_db->query("SELECT $idColumn FROM $tableName ORDER BY $idColumn DESC LIMIT 1");
+    $lastId = $stmt->fetchColumn();
+
+    if (!$lastId) {
+        return sprintf("%s%0{$padLength}d", $idPrefix, 1);
+    }
+
+    if (preg_match($pattern, $lastId, $matches)) {
+        $lastIdNum = (int)$matches[1]; 
+        $newIdNum = $lastIdNum + 1;
+    } else {
+        throw new Exception("Invalid ID format in the table.");
+    }
+
+    return sprintf("%s%0{$padLength}d", $idPrefix, $newIdNum);
+}
+
 
 // ============================================================================
 // Global Constants and Variables
@@ -293,3 +328,7 @@ $_genders = [
     'M' => 'Male',
 ];
 
+$_status = [
+    'A' => 'Active',
+    'U' => 'Unactive',
+];
